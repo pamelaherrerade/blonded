@@ -4,7 +4,6 @@ import { NocturneRelease } from "./components/NocturneRelease";
 import { ProductCard } from "./components/ProductCard";
 import { SubscribeBanner } from "./components/SubscribeBanner";
 import { SwiftModal } from "./components/SwiftModal";
-import { TestarossaDrive } from "./components/TestarossaDrive";
 import { formatBlondedTime } from "./formatTime";
 
 function isTypingTarget(target: EventTarget | null): boolean {
@@ -18,7 +17,7 @@ export default function App() {
   const [subscribeOpen, setSubscribeOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [swiftOpen, setSwiftOpen] = useState(false);
-  const [drive, setDrive] = useState<{ id: number; direction: "ltr" | "rtl" } | null>(null);
+  const [carRunning, setCarRunning] = useState(false);
 
   const subscribeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -27,7 +26,6 @@ export default function App() {
     return () => window.clearInterval(id);
   }, []);
 
-  // Fijo siempre en fondo claro
   useEffect(() => {
     document.documentElement.dataset.version = "catalog";
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#ffffff");
@@ -45,10 +43,16 @@ export default function App() {
     subscribeButtonRef.current?.focus({ preventScroll: true });
   };
 
+  // Cruza el Testarossa y al terminar abre el Suzuki Swift
   const handleCartClick = () => {
-    if (drive) return;
-    setSwiftOpen(false); // asegura que no haya nada tapando
-    setDrive({ id: Date.now(), direction: "ltr" }); // inicia el recorrido del auto
+    if (carRunning) return;
+    setSwiftOpen(false);
+    setCarRunning(true);
+
+    setTimeout(() => {
+      setCarRunning(false);
+      setSwiftOpen(true);
+    }, 1300);
   };
 
   const goHome = () => {
@@ -56,7 +60,7 @@ export default function App() {
     setSubscribeOpen(false);
     setAccountOpen(false);
     setSwiftOpen(false);
-    setDrive(null);
+    setCarRunning(false);
   };
 
   useEffect(() => {
@@ -77,7 +81,7 @@ export default function App() {
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [accountOpen, subscribeOpen, swiftOpen, drive]);
+  }, [accountOpen, subscribeOpen, swiftOpen, carRunning]);
 
   return (
     <>
@@ -135,25 +139,57 @@ export default function App() {
           {formatBlondedTime(now)}
         </p>
         <main>
+          {/* El botón PRE-ORDER NOW dentro de Nocturne también puede abrir el Suzuki directamente si quieres */}
           <NocturneRelease />
           <ProductCard />
         </main>
       </div>
 
-      {drive ? (
-        <TestarossaDrive
-          id={drive.id}
-          direction={drive.direction}
-          onDone={() => {
-            setDrive(null);
-            setSwiftOpen(true);
+      {/* 1. Animación del Testarossa */}
+      {carRunning && (
+        <div
+          style={{
+            position: "fixed",
+            top: "45%",
+            left: 0,
+            width: "100vw",
+            zIndex: 999999,
+            pointerEvents: "none",
+            transform: "translateY(-50%)",
           }}
-        />
-      ) : null}
+        >
+          <div
+            style={{
+              width: "250px",
+              animation: "driveAcross 1.3s cubic-bezier(0.2, 0.85, 0.2, 1) forwards",
+            }}
+          >
+            <svg viewBox="0 0 140 45" width="100%" height="auto" style={{ filter: "drop-shadow(0 12px 14px rgba(0,0,0,0.3))" }}>
+              <path d="M5 32 L18 20 L45 15 L100 15 L128 26 L138 32 L134 36 L5 36 Z" fill="#dc2626" />
+              <path d="M48 17 L75 17 L92 26 L40 26 Z" fill="#18181b" />
+              <line x1="50" y1="28" x2="85" y2="28" stroke="#991b1b" strokeWidth="2" />
+              <line x1="54" y1="31" x2="82" y2="31" stroke="#991b1b" strokeWidth="2" />
+              <rect x="133" y="30" width="5" height="3" fill="#facc15" />
+              <rect x="5" y="30" width="4" height="4" fill="#7f1d1d" />
+              <circle cx="32" cy="36" r="8" fill="#18181b" />
+              <circle cx="32" cy="36" r="4" fill="#9ca3af" />
+              <circle cx="110" cy="36" r="8" fill="#18181b" />
+              <circle cx="110" cy="36" r="4" fill="#9ca3af" />
+            </svg>
+          </div>
+          <style>{`
+            @keyframes driveAcross {
+              0% { transform: translateX(-280px); }
+              100% { transform: translateX(105vw); }
+            }
+          `}</style>
+        </div>
+      )}
 
-      {swiftOpen ? (
+      {/* 2. Modal original del Suzuki Swift */}
+      {swiftOpen && (
         <SwiftModal onClose={() => setSwiftOpen(false)} />
-      ) : null}
+      )}
     </>
   );
 }
