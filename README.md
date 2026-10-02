@@ -21,3 +21,4 @@ CART (o la tecla `Y`, fuera de un campo de texto) cambia entre:
 2. Un modo oscuro de carbón y negro, con un acento ácido. BLONDE pasa a negativo y TESTAROSSA NOCTURNE a la portada térmica. Un Testarossa rojo en pixel art cruza la pantalla.
 
 Vuelve a pulsar CART para regresar. La lista de correo y el acceso se quedan en la página: el envío no sale de este navegador.
+# blonded
