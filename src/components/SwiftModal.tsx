@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import suzukiSwift from "/suzuki-swift.jpg?url";
 
 type SwiftModalProps = {
   onClose: () => void;
@@ -18,8 +19,10 @@ export function SwiftModal({ onClose }: SwiftModalProps) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="swift-caption"
-      onMouseDown={(event) => {
-        if (!panelRef.current?.contains(event.target as Node)) onClose();
+      onMouseDown={(e) => {
+        if (!panelRef.current?.contains(e.target as Node)) {
+          onClose();
+        }
       }}
     >
       <div className="swift__panel" ref={panelRef}>
@@ -28,7 +31,7 @@ export function SwiftModal({ onClose }: SwiftModalProps) {
         </button>
         <img
           className="swift__photo"
-          src="/suzuki-swift.jpg"
+          src={suzukiSwift}
           width={1280}
           height={720}
           alt="Yellow Suzuki Swift"

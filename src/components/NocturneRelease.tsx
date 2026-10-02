@@ -1,5 +1,7 @@
 import { useEffect, useId, useState } from "react";
 import "@fontsource/jetbrains-mono/400.css";
+import nocturneCover from "/nocturne-cover.jpg?url";
+import nocturneThermal from "/nocturne-thermal.jpg?url";
 
 const TRACKS = [
   { id: "01", title: "TESTAROSSA", seconds: 222 },
@@ -22,17 +24,13 @@ function clock(total: number) {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
-type NocturneReleaseProps = {
-  onOpenCover: () => void;
-  onPreorder: () => void;
-};
-
-export function NocturneRelease({ onOpenCover, onPreorder }: NocturneReleaseProps) {
+export function NocturneRelease() {
   const [failed, setFailed] = useState(false);
   const [listOpen, setListOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
   const [elapsed, setElapsed] = useState(0);
+  const [added, setAdded] = useState(false);
   const grainId = useId().replace(/:/g, "");
   const active = TRACKS.find((track) => track.id === activeId) ?? null;
 
@@ -54,6 +52,11 @@ export function NocturneRelease({ onOpenCover, onPreorder }: NocturneReleaseProp
     setPlaying(true);
   };
 
+  const handlePreorder = () => {
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2500);
+  };
+
   return (
     <article className="product" id="nocturne">
       {failed ? (
@@ -62,10 +65,10 @@ export function NocturneRelease({ onOpenCover, onPreorder }: NocturneReleaseProp
           <span>NOCTURNE</span>
         </div>
       ) : (
-        <button className="product__shot product__shot--plate" type="button" onClick={onOpenCover} aria-label="Open TESTAROSSA NOCTURNE">
+        <div className="product__shot product__shot--plate" style={{ cursor: "default" }}>
           <img
             className="product__photo product__photo--catalog"
-            src="/nocturne-cover.jpg"
+            src={nocturneCover}
             width={1024}
             height={1024}
             alt="TESTAROSSA NOCTURNE, limited edition 2LP vinyl"
@@ -73,7 +76,7 @@ export function NocturneRelease({ onOpenCover, onPreorder }: NocturneReleaseProp
           />
           <img
             className="product__photo product__photo--alt"
-            src="/nocturne-thermal.jpg"
+            src={nocturneThermal}
             width={1024}
             height={1024}
             alt=""
@@ -86,7 +89,7 @@ export function NocturneRelease({ onOpenCover, onPreorder }: NocturneReleaseProp
             </filter>
             <rect width="100%" height="100%" filter={`url(#${grainId})`} />
           </svg>
-        </button>
+        </div>
       )}
       <div className="product__info">
         <h2 className="product__title">TESTAROSSA NOCTURNE</h2>
@@ -104,8 +107,13 @@ export function NocturneRelease({ onOpenCover, onPreorder }: NocturneReleaseProp
           </p>
         </div>
         <p className="price">$ 75.00</p>
-        <button id="preorder" className="preorder" type="button" onClick={onPreorder}>
-          Pre-order now
+        <button
+          id="preorder"
+          className="preorder"
+          type="button"
+          onClick={handlePreorder}
+        >
+          {added ? "Order added!" : "Pre-order now"}
         </button>
         <div className="tracklist">
           <button

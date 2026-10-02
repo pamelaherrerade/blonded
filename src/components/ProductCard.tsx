@@ -1,10 +1,7 @@
 import { useId, useState } from "react";
+import blondeVinyl from "/blonde-vinyl.jpg?url";
 
-type ProductCardProps = {
-  onOpen: () => void;
-};
-
-export function ProductCard({ onOpen }: ProductCardProps) {
+export function ProductCard() {
   const [failed, setFailed] = useState(false);
   const grainId = useId().replace(/:/g, "");
 
@@ -16,10 +13,10 @@ export function ProductCard({ onOpen }: ProductCardProps) {
           <span>2LP VINYL</span>
         </div>
       ) : (
-        <button className="product__shot" type="button" onClick={onOpen} aria-label="Open BLONDE 2LP VINYL">
+        <div className="product__shot" style={{ cursor: "default" }}>
           <img
             className="product__photo product__photo--catalog"
-            src="/blonde-vinyl.jpg"
+            src={blondeVinyl}
             width={1024}
             height={1024}
             alt="BLONDE 2LP VINYL, gatefold sleeve with two records"
@@ -27,7 +24,7 @@ export function ProductCard({ onOpen }: ProductCardProps) {
           />
           <img
             className="product__photo product__photo--alt is-negative"
-            src="/blonde-vinyl.jpg"
+            src={blondeVinyl}
             width={1024}
             height={1024}
             alt=""
@@ -40,7 +37,7 @@ export function ProductCard({ onOpen }: ProductCardProps) {
             </filter>
             <rect width="100%" height="100%" filter={`url(#${grainId})`} />
           </svg>
-        </button>
+        </div>
       )}
       <div className="product__info">
         <h2 className="product__title">BLONDE</h2>
