@@ -6,7 +6,7 @@ Recreación visual de la tienda blonded.co: navbar blanca, reloj, y la ficha de 
 
 ```bash
 npm install
-npm run dev
+npm run dev.
 ```
 
 Abre http://127.0.0.1:43123
