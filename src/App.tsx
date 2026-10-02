@@ -27,7 +27,7 @@ export default function App() {
     return () => window.clearInterval(id);
   }, []);
 
-  // Mantener fijo el modo claro
+  // Fijo siempre en fondo claro
   useEffect(() => {
     document.documentElement.dataset.version = "catalog";
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#ffffff");
@@ -46,10 +46,9 @@ export default function App() {
   };
 
   const handleCartClick = () => {
-    // Si ya está cruzando, no hace nada
     if (drive) return;
-    // Lanza primero el Testarossa por la pantalla
-    setDrive({ id: Date.now(), direction: "ltr" });
+    setSwiftOpen(false); // asegura que no haya nada tapando
+    setDrive({ id: Date.now(), direction: "ltr" }); // inicia el recorrido del auto
   };
 
   const goHome = () => {
@@ -141,24 +140,19 @@ export default function App() {
         </main>
       </div>
 
-      {/* El auto cruza con z-index alto; al terminar de cruzar (onDone) abre la foto del Suzuki */}
       {drive ? (
-        <div style={{ position: "fixed", inset: 0, zIndex: 9999, pointerEvents: "none" }}>
-          <TestarossaDrive
-            id={drive.id}
-            direction={drive.direction}
-            onDone={() => {
-              setDrive(null);
-              setSwiftOpen(true);
-            }}
-          />
-        </div>
+        <TestarossaDrive
+          id={drive.id}
+          direction={drive.direction}
+          onDone={() => {
+            setDrive(null);
+            setSwiftOpen(true);
+          }}
+        />
       ) : null}
 
       {swiftOpen ? (
-        <SwiftModal
-          onClose={() => setSwiftOpen(false)}
-        />
+        <SwiftModal onClose={() => setSwiftOpen(false)} />
       ) : null}
     </>
   );
