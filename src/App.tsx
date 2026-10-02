@@ -4,6 +4,7 @@ import { NocturneRelease } from "./components/NocturneRelease";
 import { ProductCard } from "./components/ProductCard";
 import { SubscribeBanner } from "./components/SubscribeBanner";
 import { SwiftModal } from "./components/SwiftModal";
+import { TestarossaDrive } from "./components/TestarossaDrive";
 import { formatBlondedTime } from "./formatTime";
 
 function isTypingTarget(target: EventTarget | null): boolean {
@@ -17,6 +18,7 @@ export default function App() {
   const [subscribeOpen, setSubscribeOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
   const [swiftOpen, setSwiftOpen] = useState(false);
+  const [drive, setDrive] = useState<{ id: number; direction: "ltr" | "rtl" } | null>(null);
 
   const subscribeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -25,7 +27,7 @@ export default function App() {
     return () => window.clearInterval(id);
   }, []);
 
-  // Forzar siempre modo claro y tema blanco
+  // Siempre en light mode
   useEffect(() => {
     document.documentElement.dataset.version = "catalog";
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#ffffff");
@@ -41,6 +43,15 @@ export default function App() {
   const closeSubscribe = () => {
     setSubscribeOpen(false);
     subscribeButtonRef.current?.focus({ preventScroll: true });
+  };
+
+  const handleCartClick = () => {
+    // Abre el popup del Suzuki
+    setSwiftOpen(true);
+    // Lanza el Testarossa cruzando la pantalla
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDrive({ id: Date.now(), direction: "ltr" });
+    }
   };
 
   const goHome = () => {
@@ -62,7 +73,7 @@ export default function App() {
       if (isTypingTarget(event.target) || event.metaKey || event.ctrlKey || event.altKey) return;
       if (event.key === "y" || event.key === "Y") {
         event.preventDefault();
-        setSwiftOpen((open) => !open);
+        handleCartClick();
       }
     };
 
@@ -116,7 +127,7 @@ export default function App() {
             <button
               className="nav__text nav__cart"
               type="button"
-              onClick={() => setSwiftOpen(true)}
+              onClick={handleCartClick}
             >
               Cart
             </button>
@@ -134,6 +145,9 @@ export default function App() {
         <SwiftModal
           onClose={() => setSwiftOpen(false)}
         />
+      ) : null}
+      {drive ? (
+        <TestarossaDrive id={drive.id} direction={drive.direction} onDone={() => setDrive(null)} />
       ) : null}
     </>
   );
