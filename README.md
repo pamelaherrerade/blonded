@@ -2,7 +2,7 @@
 
 Recreación visual de la tienda blonded.co: navbar blanca, reloj, y la ficha de BLONDE 2LP. CART no abre un carrito. Alterna dos versiones del sitio.
 
-## Cómo verlo
+## Cómo verlo.
 
 ```bash
 npm install
