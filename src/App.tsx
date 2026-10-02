@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AccountMenu } from "./components/AccountMenu";
-import { MediaModal } from "./components/MediaModal";
+import { MediaModal, type MediaView } from "./components/MediaModal";
+import { NocturneRelease } from "./components/NocturneRelease";
 import { ProductCard } from "./components/ProductCard";
 import { SubscribeBanner } from "./components/SubscribeBanner";
+import { SwiftModal } from "./components/SwiftModal";
 import { TestarossaDrive } from "./components/TestarossaDrive";
 import { formatBlondedTime } from "./formatTime";
 
@@ -16,7 +18,8 @@ export default function App() {
   const [now, setNow] = useState(() => new Date());
   const [subscribeOpen, setSubscribeOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
-  const [mediaOpen, setMediaOpen] = useState(false);
+  const [media, setMedia] = useState<MediaView | null>(null);
+  const [swiftOpen, setSwiftOpen] = useState(false);
   const [alternate, setAlternate] = useState(false);
   const [announcement, setAnnouncement] = useState("");
   const [drive, setDrive] = useState<{ id: number; direction: "ltr" | "rtl" } | null>(null);
@@ -35,11 +38,11 @@ export default function App() {
   }, [alternate]);
 
   useEffect(() => {
-    document.body.style.overflow = mediaOpen ? "hidden" : "";
+    document.body.style.overflow = media || swiftOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [mediaOpen]);
+  }, [media, swiftOpen]);
 
   const closeSubscribe = () => {
     setSubscribeOpen(false);
@@ -59,7 +62,8 @@ export default function App() {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        if (mediaOpen) setMediaOpen(false);
+        if (swiftOpen) setSwiftOpen(false);
+        else if (media) setMedia(null);
         else if (accountOpen) setAccountOpen(false);
         else if (subscribeOpen) setSubscribeOpen(false);
         return;
@@ -74,7 +78,7 @@ export default function App() {
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [accountOpen, mediaOpen, subscribeOpen, toggleVersion]);
+  }, [accountOpen, media, subscribeOpen, swiftOpen, toggleVersion]);
 
   return (
     <>
@@ -106,7 +110,7 @@ export default function App() {
             type="button"
             aria-label="BLONDED"
             onClick={() => {
-              document.getElementById("blonde")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              document.getElementById("nocturne")?.scrollIntoView({ behavior: "smooth", block: "start" });
             }}
           >
             <svg viewBox="0 0 28 32" width="18" height="22" aria-hidden="true">
@@ -138,10 +142,38 @@ export default function App() {
           {formatBlondedTime(now)}
         </p>
         <main>
-          <ProductCard onOpen={() => setMediaOpen(true)} />
+          <NocturneRelease
+            onOpenCover={() =>
+              setMedia({
+                label: "TESTAROSSA NOCTURNE 2LP VINYL",
+                catalog: "/nocturne-cover.jpg",
+                alternate: "/nocturne-thermal.jpg",
+                treatment: "plate",
+              })
+            }
+            onPreorder={() => setSwiftOpen(true)}
+          />
+          <ProductCard
+            onOpen={() =>
+              setMedia({
+                label: "BLONDE 2LP VINYL",
+                catalog: "/blonde-vinyl.jpg",
+                alternate: "/blonde-vinyl.jpg",
+                treatment: "negative",
+              })
+            }
+          />
         </main>
       </div>
-      {mediaOpen ? <MediaModal onClose={() => setMediaOpen(false)} /> : null}
+      {media ? <MediaModal {...media} onClose={() => setMedia(null)} /> : null}
+      {swiftOpen ? (
+        <SwiftModal
+          onClose={() => {
+            setSwiftOpen(false);
+            document.getElementById("preorder")?.focus();
+          }}
+        />
+      ) : null}
       {drive ? (
         <TestarossaDrive id={drive.id} direction={drive.direction} onDone={() => setDrive(null)} />
       ) : null}

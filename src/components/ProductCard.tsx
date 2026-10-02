@@ -26,7 +26,7 @@ export function ProductCard({ onOpen }: ProductCardProps) {
             onError={() => setFailed(true)}
           />
           <img
-            className="product__photo product__photo--alt"
+            className="product__photo product__photo--alt is-negative"
             src="/blonde-vinyl.jpg"
             width={1024}
             height={1024}
