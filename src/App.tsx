@@ -27,7 +27,7 @@ export default function App() {
     return () => window.clearInterval(id);
   }, []);
 
-  // Siempre en light mode
+  // Mantener fijo el modo claro
   useEffect(() => {
     document.documentElement.dataset.version = "catalog";
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#ffffff");
@@ -46,12 +46,10 @@ export default function App() {
   };
 
   const handleCartClick = () => {
-    // Abre el popup del Suzuki
-    setSwiftOpen(true);
-    // Lanza el Testarossa cruzando la pantalla
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setDrive({ id: Date.now(), direction: "ltr" });
-    }
+    // Si ya está cruzando, no hace nada
+    if (drive) return;
+    // Lanza primero el Testarossa por la pantalla
+    setDrive({ id: Date.now(), direction: "ltr" });
   };
 
   const goHome = () => {
@@ -59,6 +57,7 @@ export default function App() {
     setSubscribeOpen(false);
     setAccountOpen(false);
     setSwiftOpen(false);
+    setDrive(null);
   };
 
   useEffect(() => {
@@ -79,7 +78,7 @@ export default function App() {
 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [accountOpen, subscribeOpen, swiftOpen]);
+  }, [accountOpen, subscribeOpen, swiftOpen, drive]);
 
   return (
     <>
@@ -141,13 +140,25 @@ export default function App() {
           <ProductCard />
         </main>
       </div>
+
+      {/* El auto cruza con z-index alto; al terminar de cruzar (onDone) abre la foto del Suzuki */}
+      {drive ? (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, pointerEvents: "none" }}>
+          <TestarossaDrive
+            id={drive.id}
+            direction={drive.direction}
+            onDone={() => {
+              setDrive(null);
+              setSwiftOpen(true);
+            }}
+          />
+        </div>
+      ) : null}
+
       {swiftOpen ? (
         <SwiftModal
           onClose={() => setSwiftOpen(false)}
         />
-      ) : null}
-      {drive ? (
-        <TestarossaDrive id={drive.id} direction={drive.direction} onDone={() => setDrive(null)} />
       ) : null}
     </>
   );
